@@ -24,7 +24,6 @@
 #include <stdint.h>
 #include <unistd.h>          //close
 #include <iostream>
-#include <thread>
 
 #include "phy_interface.h"
 

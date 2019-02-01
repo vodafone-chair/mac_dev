@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.10.2)
+project (mac_gfdm)
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pthread")
+set(CMAKE_LINKER_FLAGS "-pthread")
 
 set(dir_scratch  "scratch/") # run files (for executables)
 set(dir_build "build/")      # executables
@@ -33,7 +35,6 @@ set(src_files ${dir_src}channel_server.h
               ${dir_src}datagram.h
               ${dir_src}datagram.cpp) # set source files (classes)
 
-project (mac_gfdm)
 
 include_directories(src) #Bring the headers files
 

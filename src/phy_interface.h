@@ -18,7 +18,6 @@
 #include <stdint.h>
 #include <unistd.h>          //close
 #include <iostream>
-#include <thread>
 #include <vector>            // vector
 
 #include "mac.h"

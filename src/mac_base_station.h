@@ -16,7 +16,6 @@
 #include <stdint.h>
 #include <unistd.h>          //close
 #include <iostream>
-#include <thread>
 
 #include "mac.h"
 #include "datagram.h"
