@@ -1,0 +1,96 @@
+//  std::cout << buffer << std::endl;
+
+      if (strcmp (buffer, "close") == 0) // check if string is equal
+	{
+	  close (m_sock);
+	  printf ("Close Socket NOW\n\n");
+	  break;
+	}
+
+      std::string dataString = "";
+
+      int randNum = Functions::GenerateRandomNumber (1000);                  // generate random number
+
+
+
+      char* payload = 0;                                                               // declare char array
+      uint32_t payloadSize = Functions::GetCharForPacket (payload, "BS-APP sent this number: " + std::to_string (randNum));       // get packet char array
+      PacketData packet = GeneratePacket (payload, payloadSize, 3 /* dst address*/);   // generate packet
+      delete[] payload;
+
+
+
+
+      dataString = "BS-APP sent this number: " + std::to_string (randNum);
+
+      uint32_t payloadSize = dataString.size () + 1;                          // payload size, "+1" because of the '\0' character
+      char* payload = new char[payloadSize];                                  // declare char array
+      Functions::ConvertStringToChar (payload, dataString);                   // include string to char array
+
+      std::cout << "Base Station sends: " << payload << std::endl;            // output what is sent
+
+      PacketData packet = GeneratePacket (payload, payloadSize, 3 /* dst address*/);  // generate packet
+      delete[] payload;
+
+	
+	  std::cout << packet.m_length << std::endl;
+
+  char* outPacket;
+  int len = Headers::GeneratePacketWithHeader(outPacket, packet); // generate packet with header
+
+  std::cout << "here" << std::endl;
+
+  char header[] = {(char)packet.m_version,
+                   (char)packet.m_sequNum,
+                   (char)packet.m_srcAddress,
+                   (char)packet.m_dstAddress,
+                   (char)packet.m_crc_header};
+
+  uint8_t header[] = {packet.m_version,
+                      packet.m_sequNum,
+                      packet.m_srcAddress,
+                      packet.m_dstAddress,
+                      packet.m_crc_header};
+
+//  packet.PrintPacket();
+  uint32_t sizeHeader = sizeof(header);
+
+  // create packet for transmission
+  uint32_t len = sizeHeader + packet.m_payloadLength;
+  char* buffer = new char[len];
+  memset (buffer,'0',len);
+
+
+  memcpy(buffer, header, sizeHeader);                          // write header to buffer
+  memcpy(buffer + sizeHeader, packet.m_data, packet.m_length);  // add offset of the header and write packet
+
+
+  memcpy(buffer, packet.m_data, packet.m_payloadLength);  // add offset of the header and write packet
+  memcpy(buffer + packet.m_payloadLength, header, sizeHeader);                          // write header to buffer
+
+
+
+  std::cout << buffer << std::endl;
+
+
+  char* out = packet.m_data;
+  strcat (out, header);
+
+  char* outPacket = packet.m_data;
+  int len = strlen(header)+1;
+
+  uint32_t len = packet.Serialize(*out);
+
+  char * outTest = new char [out.length()+1];
+  strcat (outTest, out.c_str());
+
+  std::cout << strlen(packet.m_data) << std::endl;
+
+
+  std::cout << "Test " << out.length() << std::endl;
+  std::cout << packet.m_length << std::endl;
+
+  char* outPacket = packet.m_data;
+  int len = packet.m_length;
+
+  std::cout << (uint16_t)packet.m_sequNum << std::endl;
