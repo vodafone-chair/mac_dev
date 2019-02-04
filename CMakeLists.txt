@@ -42,4 +42,5 @@ add_executable(channel_server.exe ${dir_scratch}channel_server.cpp ${src_files})
 add_executable(ue_node.exe ${dir_scratch}ue_node.cpp ${src_files})
 add_executable(base_station_node.exe ${dir_scratch}base_station_node.cpp ${src_files})
 
+
 add_custom_target(runtest ./run_example.sh)

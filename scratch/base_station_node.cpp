@@ -47,8 +47,14 @@ main (int argc, char *argv[])
   std::thread receiveThread (&PhyInterface::ReceiveData, phyInterface);   // Rx function in the phyInterface
   std::thread sendThread (&App::TriggerPackets, appBs, 1e6);              // Tx function in the application, interval in us
 
+  // start threads
   receiveThread.join();
   sendThread.join();
+
+  // delete pointers
+  delete appBs;
+  delete macBs;
+  delete phyInterface;
 
   return 0;
 

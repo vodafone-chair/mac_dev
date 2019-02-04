@@ -106,9 +106,10 @@ PhyClient::ReceiveData ()
       if (len == -1)
         std::cout << "Error: Client::StartReceiving: recv" << std::endl;
 
-      buffer[len] = '\0';   // set NULL character at the end, at this point strlen() stops counting
-
-      m_mac->ReceiveData (buffer, len);
+      char* phyPayload = new char[len];      // phy payload
+      memcpy (phyPayload, buffer, len);      // copy buffer to phy payload
+      m_mac->ReceiveData (phyPayload, len);  // receive in MAC
+      delete[] phyPayload;                   // delete pointer
     }
 }
 

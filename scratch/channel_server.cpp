@@ -26,6 +26,7 @@ main (int argc, char *argv[])
   channelServer->Initialize();
   channelServer->StartReceivingLoop();
 
+  delete channelServer;
 
   return 0;
 

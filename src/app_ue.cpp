@@ -40,19 +40,26 @@ AppUe::ReceivePacket (PacketData packet)
 
   if (MessageTypes::IsRequestUeMessage (packet))
     {
-      usleep(m_nodeAddress * 2e3);  // wait for nodeAddress * 2 in ms
+      packet.DeletePayload();
+
+      usleep(m_nodeAddress * 2e3);  // wait for nodeAddress * 2000 microseconds
       RetransmitToBs (MessageTypes::UeReplyMessage ());
     }
   else if (MessageTypes::IsGrantD2dMessage (packet))
     {
+      packet.DeletePayload();
+
       TransmitD2dMessage ();
     }
   else if (MessageTypes::IsUeD2dMessage (packet))
     {
+      packet.DeletePayload();
       // do nothing
     }
   else
     {
+      packet.DeletePayload();
+
       RetransmitToBs ("UE replies from Address: " + std::to_string (m_nodeAddress));
     }
 }

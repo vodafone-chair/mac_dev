@@ -7,8 +7,6 @@ PhyInterface::PhyInterface () :
 
 PhyInterface::~PhyInterface ()
 {
-  delete m_mac;
-  m_mac = 0;
 }
 
 void

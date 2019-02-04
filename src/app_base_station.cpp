@@ -41,6 +41,8 @@ AppBs::ReceivePacket (PacketData packet)
     {
       AddUeAddressToVector (packet.m_header.m_srcAddress); // add the UE address to the m_packetHeaderList
     }
+
+  packet.DeletePayload();                              // delete pointer to char array
 }
 
 void

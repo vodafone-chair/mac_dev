@@ -89,6 +89,7 @@ public:
 
   PacketData ();
   PacketData (char* payload, uint32_t payloadSize);
+  virtual~PacketData ();
 
   void SetData (char* payload, uint32_t payloadSize); // set payload
   void SetHeader(Header header);                      // set header

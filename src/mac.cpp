@@ -9,13 +9,6 @@ Mac::Mac () :
 Mac::~Mac ()
 {
   delete m_macQueue;
-  m_macQueue = 0;
-
-  delete m_app;
-  m_app = 0;
-
-  delete m_phyInterface;
-  m_phyInterface = 0;
 }
 
 void

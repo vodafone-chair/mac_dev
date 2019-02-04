@@ -62,10 +62,13 @@ PacketData::PacketData () :
 }
 
 PacketData::PacketData (char* payload, uint32_t payloadSize) :
-    m_header (Header ()), m_payload (0), m_payloadSize (payloadSize)
+    m_header (Header ()), m_payload (0), m_payloadSize (0)
 {
-  m_payload = new char[payloadSize];          // create new char array that is connected to the packet object
-  memcpy (m_payload, payload, payloadSize);   // copy payload to m_payload
+  SetData (payload, payloadSize);
+}
+
+PacketData::~PacketData ()
+{
 }
 
 void
@@ -73,6 +76,7 @@ PacketData::SetData (char* payload, uint32_t payloadSize)
 {
   m_payloadSize = payloadSize;               // Set payload size
 
+  delete[] m_payload;                        // delete the pointer
   m_payload = new char[payloadSize];         // create new buffer that is connected to the packet object
   memcpy (m_payload, payload, payloadSize);  // copy payload to m_payload
 }

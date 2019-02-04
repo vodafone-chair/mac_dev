@@ -31,17 +31,21 @@ MacBs::AddHeader (PacketData packet)
 {
   char* buffer = new char[packet.GetSizeHeaderAndPayload ()];    // create empty buffer for the combination of header and payload
   uint32_t lenHeadAndPayl = packet.Serialize (buffer);           // add packet header to packet
+  packet.DeletePayload();                                        // delete pointer
 
   SendData (buffer, lenHeadAndPayl);                             // send data
+  delete[] buffer;                                               // delete pointer
 }
 
 void
 MacBs::ReceiveData (char* receivedData, uint32_t lenHeadAndPayl)
 {
-  PacketData packet = PacketData::Deserialize (receivedData, lenHeadAndPayl);  // Remove MAC header from the received packet
+  PacketData packet = PacketData::Deserialize (receivedData, lenHeadAndPayl);     // Remove MAC header from the received packet
 
   // address check
   if (packet.m_header.m_dstAddress == m_nodeAddress || packet.m_header.m_dstAddress == Header::GetBroadcastAddress ())
-    m_app->ReceivePacket (packet);                                                // call receive function in the application
+    m_app->ReceivePacket (packet);      // call receive function in the application
+  else
+    packet.DeletePayload();             // delete pointer
 }
 
