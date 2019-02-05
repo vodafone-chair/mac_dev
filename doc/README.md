@@ -23,7 +23,13 @@ The main application running on the base station is an echo server client. The b
 ### D2D application
 A second application is D2D (device-to-device) communication. The base station sends a "GrantD2d" message to a UE, which is then allowed to send a D2D message. That means, the UE can directly send its message (payload) to its neighbors and the base station just controls the communication. Normally, in cellular communication a UE just sends its message (payload) to the base station (uplink), which distributes this message (downlink) to the destination UE. 
 
-To activate the D2D application: in ```$ src/app_base_station.cpp``` set ```uint32_t appUsed = 1``` to ```uint32_t appUsed = 2``` and run ```make```.
+To activate the D2D application:
+
+* In src/app_base_station.cpp: ```uint32_t appUsed = 1 → uint32_t appUsed = 2```
+```sh
+$ make
+$ ./run_example.sh
+```
 
 ### System specification
 This module was tested on the following system:
