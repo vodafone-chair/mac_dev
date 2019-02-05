@@ -82,7 +82,7 @@ PacketData::SetData (char* payload, uint32_t payloadSize)
 }
 
 void
-PacketData::DeletePayload ()
+PacketData::DeletePacket ()
 {
   delete[] m_payload;
   m_payload = 0;

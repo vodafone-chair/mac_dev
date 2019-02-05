@@ -26,7 +26,7 @@ App::Initialize ()
 {
   if (m_mac == 0)
     {
-      std::cout << "App::Initialize: mac object is 0. Enter 0 to exit." << std::endl;
+      std::cout << "App::Initialize: mac object is 0. Set the object in main.cpp. Enter 0 to exit." << std::endl;
 
       std::string s;
       std::cin >> s; // stop console to be closed

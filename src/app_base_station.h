@@ -42,6 +42,7 @@ private:
   bool IsUeAddressIncluded (uint8_t ueAddress);   // checks if UE address is already stored in vector
   uint8_t GetNextDstAddress ();                   // returns the next UE address for the round robin schedule
   void Purge();                                   // purge vector with UE addresses, all entries which are expired are dropped
+  void RestrictRrCounter();                       // Restricts the round robin counter to the size of the UE address list
 
   uint16_t m_rr_counter;               // counter for the round robin schedule
   time_t m_expirationTimeNodeVector;   // expiration time, when the nodes are removed from the round robin node vector

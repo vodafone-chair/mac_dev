@@ -31,7 +31,7 @@ MacUe::AddHeader (PacketData packet)
 {
   char* buffer = new char[packet.GetSizeHeaderAndPayload ()];    // create empty buffer for the combination of header and payload
   uint32_t lenHeadAndPayl = packet.Serialize (buffer);           // add packet header to packet
-  packet.DeletePayload();                                        // delete pointer
+  packet.DeletePacket();                                         // delete pointer to char array
 
   SendData (buffer, lenHeadAndPayl);                             // send data
   delete[] buffer;                                               // delete pointer
@@ -46,5 +46,5 @@ MacUe::ReceiveData (char* receivedData, uint32_t lenHeadAndPayl)
   if (packet.m_header.m_dstAddress == m_nodeAddress || packet.m_header.m_dstAddress == Header::GetBroadcastAddress ())
     m_app->ReceivePacket (packet);     // call receive function in the application
   else
-    packet.DeletePayload();            // delete pointer
+    packet.DeletePacket();             // delete pointer to char array
 }

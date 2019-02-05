@@ -57,7 +57,7 @@ PhyClient::Initialize ()
 
   if (m_mac == 0)
     {
-      std::cout << "Client::Initialize: mac object is 0. Enter 0 to exit." << std::endl;
+      std::cout << "PhyClient::Initialize: mac object is 0. Set the object in main.cpp. Enter 0 to exit." << std::endl;
 
       std::string s;
       std::cin >> s; // stop console to be closed
@@ -106,10 +106,7 @@ PhyClient::ReceiveData ()
       if (len == -1)
         std::cout << "Error: Client::StartReceiving: recv" << std::endl;
 
-      char* phyPayload = new char[len];      // phy payload
-      memcpy (phyPayload, buffer, len);      // copy buffer to phy payload
-      m_mac->ReceiveData (phyPayload, len);  // receive in MAC
-      delete[] phyPayload;                   // delete pointer
+      m_mac->ReceiveData (buffer, len);  // pass to MAC
     }
 }
 

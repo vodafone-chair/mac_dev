@@ -93,7 +93,7 @@ public:
 
   void SetData (char* payload, uint32_t payloadSize); // set payload
   void SetHeader(Header header);                      // set header
-  void DeletePayload();                               // delete payload, remove char* pointer
+  void DeletePacket();                                // delete char* pointer, free the memory
 
   uint32_t GetPayloadSize ();                         // get payload size
   uint32_t GetSizeHeaderAndPayload ();                // get header And payload size
