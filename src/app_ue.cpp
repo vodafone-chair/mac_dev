@@ -75,7 +75,7 @@ AppUe::TransmitD2dMessage ()
   payload += " from Node " + std::to_string (m_nodeAddress);                       // generate payload
 
   PacketData packet = GeneratePacket (Header::GetBroadcastAddress (), payload);    // generate packet
-  std::cout << "\nTX-UE-APP " << packet << std::endl;
+  std::cout << "TX-UE-APP " << packet << std::endl;
   AppUe::SendPacket (packet);                                                      // transmit packet
 }
 
