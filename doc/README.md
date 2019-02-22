@@ -20,7 +20,7 @@ The program also includes signaling which is used to assign UEs to the base stat
 ### Main Application: Echo server client with round robin scheduling
 The main application running on the base station is an echo server client. The base station transmits a message to a UE, which will send an answer to the base station. The scheduling for the UEs is a simple round robin scheme.
 
-### Activate a D2D application
+### Activate the D2D application
 A second application is D2D (device-to-device) communication. The base station sends a "GrantD2d" message to a UE, which is then allowed to send a D2D message. That means, the UE can directly send its message (payload) to its neighbors and the base station just controls the communication. Normally, in cellular communication a UE just sends its message (payload) to the base station (uplink), which distributes this message (downlink) to the destination UE. 
 
 To activate the D2D application:

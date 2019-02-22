@@ -210,3 +210,16 @@ Functions::ComputeCrc (const char* data, uint32_t len)
   return crc;
 }
 
+std::string
+Functions::PrintSocketAddress (sockaddr_in address, std::string prefix, std::string suffix)
+{
+  std::stringstream sOutput;
+
+  std::string ipAddress (inet_ntoa (address.sin_addr));
+  std::string port = std::to_string (htons (address.sin_port));
+
+  sOutput << prefix << "IP: " << ipAddress << " Port: " << port << suffix;
+
+  return sOutput.str ();
+}
+

@@ -32,14 +32,14 @@ public:
   PhyInterface();
   virtual~PhyInterface();
 
-  virtual void Initialize () = 0;                                  // Initialize functions
+  virtual void Initialize (PhyInfo phyInfo) = 0;                   // Initialize functions
   virtual void SendData (char* data_to_send, uint32_t len) = 0;    // send data, implemented in child class
   virtual void ReceiveData () = 0;                                 // receive data, implemented in child class
 
   void SetMac(Mac* mac);                                           // set mac (for the send function)
 
 protected:
-  Mac* m_mac;                 // mac object
+  Mac* m_mac;                                                      // mac object
 
 };
 

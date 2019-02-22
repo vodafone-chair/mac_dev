@@ -19,17 +19,31 @@ int
 main (int argc, char *argv[])
 {
   uint8_t nodeAddress (0);
-  if (argc == 2)
+  uint16_t srcPort (0);
+  uint16_t channelServerPort (8877);
+
+  if (argc >= 2)
     nodeAddress = (uint8_t) atoi (argv[1]);
   else
-    std::cout << "UE: No node address parameter set. Please set the address of the node [2...254]." << std::endl; // 255 is broadcast
+    {
+      std::cout << "UE: No node address parameter set. Please set the address of the node [2...254]." << std::endl; // 255 is broadcast
+      exit (EXIT_FAILURE);
+    }
 
-  std::cout << "Start: UE with node address: " << (uint16_t) nodeAddress << std::endl;
+  if (argc >= 3)
+    srcPort = (uint16_t) atoi (argv[2]);
+  else
+    {
+      std::cout << "Please set a Port Address." << std::endl;
+      exit (EXIT_FAILURE);
+    }
+
+  std::cout << "Start: UE with node-address: " << (uint16_t) nodeAddress << std::endl;
 
   // declaration of the objects for the layer APP, MAC and PHY
   App* appUe = new AppUe ();                        // ue application
-  Mac* macUe = new MacUe ();                       // ue mac
-  PhyInterface* phyInterface = new PhyClient ();   // phy interface to send data
+  Mac* macUe = new MacUe ();                        // ue mac
+  PhyInterface* phyInterface = new PhyClient ();    // phy interface to send data
 
   // Set interfaces among layers
   appUe->SetMac (macUe);
@@ -38,7 +52,7 @@ main (int argc, char *argv[])
   phyInterface->SetMac (macUe);
 
   // Initialize the layers
-  phyInterface->Initialize ();
+  phyInterface->Initialize (PhyInfo (srcPort, channelServerPort));
   macUe->Initialize (nodeAddress);   // provide the node address to the layers
   appUe->Initialize ();
 

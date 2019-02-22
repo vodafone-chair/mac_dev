@@ -29,7 +29,7 @@ ChannelServer::Initialize ()
   CreateSocket ();
   BindSocket ();
 
-  std::cout << PrintAddress (m_server_bind_address, "Server: ", "\n");
+  std::cout << Functions::PrintSocketAddress (m_server_bind_address, "Server Address: ", "\n");
 }
 
 void
@@ -38,7 +38,7 @@ ChannelServer::CreateServerAddress ()
   memset (&m_server_bind_address, 0, sizeof(m_server_bind_address)); // socket address used for the server, set all to 0
   m_server_bind_address.sin_family = AF_INET;                        // Ipv4 address space
   m_server_bind_address.sin_port = htons (m_server_port);            // htons: host to network short: transforms a value in host byte order to network byte
-  m_server_bind_address.sin_addr.s_addr = htonl (INADDR_ANY);        // htons: host to network long: transforms a value in network byte order to host byte order
+  m_server_bind_address.sin_addr.s_addr = htonl (INADDR_ANY);        // htonl: host to network long: transforms a value in network byte order to host byte order
 }
 
 void
@@ -98,11 +98,12 @@ ChannelServer::StartReceivingLoop ()
 
       // Print Received information
 //      std::cout << "Received: " << buffer << std::endl;
-      std::cout << PrintAddress (client_address, "Channel Server Received Packet: ");
+      std::cout << Functions::PrintSocketAddress (client_address, "\nChannel Server Received Packet from: ");
       std::cout << std::endl;
 
-      AddPortToVector (client_address.sin_port);
-      RetransmitToAll (client_address.sin_port, buffer, len, client_address);
+      uint16_t srcPort = htons (client_address.sin_port); // htons: host to network short: transforms a value in host byte order to network byte
+      AddPortToVector (srcPort);
+      RetransmitToAll (srcPort, buffer, len, client_address);
     }
 }
 
@@ -111,7 +112,7 @@ ChannelServer::RetransmitToAll (uint16_t receivedFromPort, char* buffer, uint32_
 {
   // send same content back to all nodes ("echo"), i.e. emulate the channel
 
-  // block the "Initialize" packets that they are not retransmitted, to run: include "#ifdef RUN"
+  // block the "Initialize" packets that they are not retransmitted
 #if 0
   if (Functions::IsStringEqual (buffer, (char*)MessageTypes::InitializeMessage().c_str()))
   return;
@@ -121,8 +122,8 @@ ChannelServer::RetransmitToAll (uint16_t receivedFromPort, char* buffer, uint32_
     {
       if (receivedFromPort != (*it))
         {
-          client_address.sin_port = (*it); // set port for the receiving node
-          std::cout << "Server: Retransmit to Port: " << client_address.sin_port << std::endl;
+          client_address.sin_port = htons (*it); // set port for the receiving node
+          std::cout << "Server: Retransmit to Port: " << htons (client_address.sin_port) << std::endl;
           sendto (m_sock, buffer, len, 0, (struct sockaddr *) &client_address, sizeof(client_address));
         }
     }
@@ -131,7 +132,7 @@ ChannelServer::RetransmitToAll (uint16_t receivedFromPort, char* buffer, uint32_
 void
 ChannelServer::AddPortToVector (uint16_t port)
 {
-  if (IsPortIncluded (port) == false)
+  if (IsPortIncluded (port) == false && port != 0)
     {
       m_portsUes.push_back (port);
     }
@@ -155,15 +156,3 @@ ChannelServer::SetServerPort (uint16_t serverPort)
   m_server_port = serverPort;
 }
 
-std::string
-ChannelServer::PrintAddress (sockaddr_in address, std::string prefix, std::string suffix)
-{
-  std::stringstream sOutput;
-
-  std::string ipAddress (inet_ntoa (address.sin_addr));
-  std::string port = std::to_string (ntohs (address.sin_port));
-
-  sOutput << prefix << "From IP: " << ipAddress << " Port: " << port << suffix;
-
-  return sOutput.str ();
-}

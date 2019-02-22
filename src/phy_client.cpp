@@ -9,7 +9,7 @@
 #include "phy_client.h"
 
 PhyClient::PhyClient () :
-    PhyInterface::PhyInterface(), m_sock (0), m_server_port (8877), m_server_name ("localhost"), m_running (true), m_bufferLength (1024)
+    PhyInterface::PhyInterface (), m_sock (0), m_sourcePort (0), m_sourceIp ("0.0.0.0"), m_serverPort (8877), m_serverIp ("127.0.0.1"), m_running (true), m_bufferLength (1024)
 {
 }
 
@@ -29,13 +29,31 @@ PhyClient::StopClient ()
 uint16_t
 PhyClient::GetServerPort ()
 {
-  return m_server_port;
+  return m_serverPort;
+}
+
+void
+PhyClient::SetServerIp (std::string serverIp)
+{
+  m_serverIp = serverIp;
 }
 
 void
 PhyClient::SetServerPort (uint16_t serverPort)
 {
-  m_server_port = serverPort;
+  m_serverPort = serverPort;
+}
+
+void
+PhyClient::SetSourceIp (std::string sourceIp)
+{
+  m_sourceIp = sourceIp;
+}
+
+void
+PhyClient::SetSourcePort (uint16_t sourcePort)
+{
+  m_sourcePort = sourcePort;
 }
 
 void
@@ -45,15 +63,20 @@ PhyClient::SetRunning (bool isRunnung)
 }
 
 void
-PhyClient::Initialize ()
+PhyClient::Initialize (PhyInfo phyInfo)
 {
-  uint16_t SERVER_PORT = 8877;  // port of the channel server (we want to reach the server)
-  SetServerPort (SERVER_PORT);
+  SetServerPort (phyInfo.m_dstPort);     // set port of the channel server (we want to reach the server)
+  SetServerIp (phyInfo.m_dstIpAddress);  // set Ipv4 address of the server
+  SetSourcePort (phyInfo.m_srcPort);     // set port of the node
+  SetSourceIp (phyInfo.m_srcIpAddress);  // set Ipv4 address of the node
 
-  CreateServerAddress ();  // builds the server address to which the data is sent
-  CreateSocket ();         // builds the socket
+  CreateServerAddress ();       // creates the server socket address to which the data is sent
+  CreateSourceSocketAddress (); // creates the node socket address
+  CreateNodeSocket ();          // builds the socket of the node
+  BindSourceSocketAddress ();   // binds node socket address
 
-  std::cout << PrintAddress (m_server_address, "Server to reach:", "\n");
+  std::cout << Functions::PrintSocketAddress (m_nodeSocketAddress, "Node socket address: ", "\n");
+  std::cout << Functions::PrintSocketAddress (m_serverSocketAddress, "Server to reach: ", "\n");
 
   if (m_mac == 0)
     {
@@ -62,24 +85,32 @@ PhyClient::Initialize ()
       std::string s;
       std::cin >> s; // stop console to be closed
 
-      exit(EXIT_FAILURE);
+      exit (EXIT_FAILURE);
     }
 }
 
 void
 PhyClient::CreateServerAddress ()
 {
-  //  struct sockaddr_in server_address;
-  memset (&m_server_address, 0, sizeof(m_server_address));        // socket address used for the server, set all to 0
-  m_server_address.sin_family = AF_INET;                          // Ipv4 address space
-  m_server_address.sin_port = htons (m_server_port);              // htons: host to network short: transforms a value in host byte order to network byte
-  inet_pton (AF_INET, m_server_name, &m_server_address.sin_addr); // converts IPv4 or IPv6 from textual to network (binary) format
+  memset (&m_serverSocketAddress, 0, sizeof(m_serverSocketAddress));    // socket address used for the server, set all to 0
+  m_serverSocketAddress.sin_family = AF_INET;                           // Ipv4 address space
+  inet_aton (m_serverIp.c_str (), &m_serverSocketAddress.sin_addr);     // set local host Ipv4
+  m_serverSocketAddress.sin_port = htons (m_serverPort);                // htons: host to network short: transforms a value in host byte order to network byte
 }
 
 void
-PhyClient::CreateSocket ()
+PhyClient::CreateSourceSocketAddress ()
 {
-  if ((m_sock = socket (PF_INET, SOCK_DGRAM, 0)) < 0)     // create a UDP socket
+  memset (&m_nodeSocketAddress, 0, sizeof(m_nodeSocketAddress));
+  m_nodeSocketAddress.sin_family = AF_INET;
+  inet_aton (m_sourceIp.c_str (), &m_nodeSocketAddress.sin_addr);     // set local host Ipv4
+  m_nodeSocketAddress.sin_port = htons (m_sourcePort);
+}
+
+void
+PhyClient::CreateNodeSocket ()
+{
+  if ((m_sock = socket (PF_INET, SOCK_DGRAM, 0)) < 0)           // create a UDP socket
     {
       printf ("Client::CreateSocket: Could not create a socket\n");
       return;
@@ -87,15 +118,25 @@ PhyClient::CreateSocket ()
 }
 
 void
+PhyClient::BindSourceSocketAddress ()
+{
+  if ((bind (m_sock, (struct sockaddr *) &m_nodeSocketAddress, sizeof(m_nodeSocketAddress))) < 0)
+    {
+      printf ("PhyClient::BindSocket: Could not bind socket.\n");
+      return;
+    }
+}
+
+void
 PhyClient::SendData (char* data_to_send, uint32_t len)
 {
-  sendto (m_sock, data_to_send, len, 0, (struct sockaddr*) &m_server_address, sizeof(m_server_address));
+  sendto (m_sock, data_to_send, len, 0, (struct sockaddr*) &m_serverSocketAddress, sizeof(m_serverSocketAddress));
 }
 
 void
 PhyClient::ReceiveData ()
 {
-  struct sockaddr_in address;
+  struct sockaddr_in address; // address of the packet's source
   socklen_t address_len (0);
 
   while (m_running)
@@ -110,16 +151,4 @@ PhyClient::ReceiveData ()
     }
 }
 
-std::string
-PhyClient::PrintAddress (sockaddr_in address, std::string prefix, std::string suffix)
-{
-  std::stringstream ss;
-
-  std::string ipAddress (inet_ntoa (address.sin_addr));
-  std::string port = std::to_string (ntohs (address.sin_port));
-
-  ss << prefix << " To IP: " << ipAddress << " Port: " << port << suffix;
-
-  return ss.str ();
-}
 

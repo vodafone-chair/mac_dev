@@ -115,7 +115,7 @@ uint8_t
 AppBs::GetNextDstAddress ()
 {
   if (m_ueAddressList.size () == 0)
-    return 2;  // 2 because base station has source address 1
+    return 2;      // 2 because base station has source address 1
 
   m_rr_counter++;  // increment round robin counter
   RestrictRrCounter ();

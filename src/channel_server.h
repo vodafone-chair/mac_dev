@@ -64,9 +64,6 @@ private:
   bool IsPortIncluded(uint16_t port);    // check if port is already stored
 
   void RetransmitToAll(uint16_t receivingPort, char* buffer, uint32_t len, struct sockaddr_in); // retransmits to all nodes stored in the vector
-
-  std::string PrintAddress(sockaddr_in address, std::string prefix, std::string suffix = "");   // print IPv4 and port address
-
 };
 
 
